@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include "play.hpp"
+#include "atm.hpp"
 
 using namespace std;
 
@@ -27,6 +28,8 @@ main(int      argc,
 
     printf("+---------------------------------+"); cout << endl;
     printf("+ Random Gaem by Ezintegg2398     +"); cout << endl;
+    printf("+ Directed by jasonddebaba        +"); cout << endl;
+    printf("+                                 +"); cout << endl;
     printf("+ Written in C++, Version rolling +"); cout << endl;
     printf("+                                 +"); cout << endl;
     printf("+ 1. Launch the ATM [incomplete]  +"); cout << endl;

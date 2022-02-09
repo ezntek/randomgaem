@@ -11,18 +11,20 @@ float balance;
 
 // return values shall be used
 
-void
+float
 getData()
 {
     ifstream wa;
     wa.open("rgMetadata/.Wallet");
     wa >> buf;
     wa.close();
+
+    return buf;
 }
 
 class Wallet { public:
 
-    void
+    float
     deposit(int depositAmount)
     {  
         ofstream wallet;
@@ -62,4 +64,4 @@ class Wallet { public:
         buf = getData();
         return buf;
     }
-}
+};

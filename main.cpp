@@ -41,7 +41,7 @@ main(int      argc,
 
     if (choice == "1")
     {
-        // write handling code later, use atm.hpp from pcmon if needed
+        atmmenu();
     }
     else if (choice == "2")
     {

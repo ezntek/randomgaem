@@ -5,6 +5,21 @@ using namespace std;
 
 // its OO so i will take advantage of it
 
+int 
+random(int max)
+{
+    srand((unsigned) time(0));
+    max = 1 + (rand() % max);
+    return max;
+}
+
+void
+clear()
+{
+    system("clear");
+}
+
+
 class Player { public:
     int HP;
     string name;
@@ -19,14 +34,6 @@ class Player { public:
 
 int randomBuffer;
 string inputBuffer;
-
-int 
-random(int max)
-{
-    srand((unsigned) time(0));
-    max = 1 + (rand() % max);
-    return max;
-}
 
 bool
 game(string playername)

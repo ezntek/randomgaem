@@ -4,6 +4,7 @@
 #include "storage.hpp"
 
 using namespace std;
+namespace fs = std::filesystem;
 
 Wallet wallet;
 
@@ -15,13 +16,57 @@ float inmoneyc;
 float outmoneyc;
 string choicebf;
 
+
 class ATM { public:
+
+    void
+    changePin()
+    {
+        // calling createPin would help very much
+
+        if (loginstate == "not logged in")
+        {
+            printf("Please log in before you try to change your PIN.");
+        }
+        if (!fs::exists("rgMetadata/.Pin"))
+        {
+            printf("you didn't set a PIN yet, please go set it.");
+        }
+
+        fstream pinfile;
+        pinfile.open("rgMetadata/.Pin", ios::out);
+        pinfile >> pin;
+        pinfile.close();
+
+        for (size_t i = 0; i < 3; i++)
+        {
+            printf("enter your current PIN: ");
+            cin >> pinInput;
+
+            if (pinInput == pin)
+            {
+                clear();
+                printf("Success! Now you can change your pin.\n");
+                createPin(false);
+            } 
+            else 
+            {
+                if (i == 3)
+                {
+                    printf("You tried too many times, please try again later.\n");
+                }
+                clear();
+                printf("Pin is wrong, please try again.\n");
+                
+            } // if statement      
+        } // for loop
+    } // function
 
     void 
     hello()
     {
         cout << "WELCOME TO THE ATM" << endl;
-        system("clear");
+        clear();
     } 
 
     void
@@ -39,9 +84,9 @@ class ATM { public:
             printf("You didnt set a pin yet... Go set one?");
         }
 
-        ofstream pinVerification;
-        pinVerification.open("rgMetadata/.Pin");
-        pin << pinVerification;
+        fstream pinVerification;
+        pinVerification.open("rgMetadata/.Pin", ios::out);
+        pinVerification >> pin;
         pinVerification.close();
 
         for (size_t i = 0; i < 3; i++)
@@ -60,7 +105,7 @@ class ATM { public:
                 printf("you didn't enter your PIN correctly, please try again.\n");
             }
 
-            if (i = 3)
+            if (i == 3)
             {
                 printf("you entered the wrong PIN too many times, please try again later.\n");
                 return;
@@ -71,33 +116,39 @@ class ATM { public:
     } // function
 
     void
-    withdraw()
+    withdraw(int outamt)
     {
-        if (loginstate == "not logged in")
+        if (outamt != NULL) {
+            wallet.deposit(outamt);
+        }
+        else if (loginstate == "not logged in")
         {
             printf("You will need to log in first.");
             return;
         }
         
         cout << "How much money do you want to withdraw?";
-        cin >> choicebf;
+        cin >> outmoneyc;
 
-        wallet.withdraw(choicebf);
+        wallet.withdraw(outmoneyc);
     }
 
     void
-    deposit()
+    deposit(int inamt)
     {
-        if (loginstate == "not logged in")
+        if (inamt != NULL) {
+            wallet.deposit(inamt);
+        }
+        else if (loginstate == "not logged in")
         {
             printf("You will need to log in first.");
             return;
         }
         
         cout << "How much money do you want to deposit?";
-        cin >> choicebf;
+        cin >> inmoneyc;
 
-        wallet.deposit(choicebf);
+        wallet.deposit(inmoneyc);
     }
 
     void
@@ -107,7 +158,7 @@ class ATM { public:
         {
             if (!fs::exists("rgMetadata/.Pin"))
             {
-                printf("you have already created the PIN, you just need to log in.\n")
+                printf("you have already created the PIN, you just need to log in.\n");
             }
         }
         
@@ -126,7 +177,7 @@ class ATM { public:
 
             if (pincode != verifycode)
             {
-                if (i = 3)
+                if (i == 3)
                 {
                     printf("You tried too many times but the PINs never matched. please try again from the menu.\n");
                     return;
@@ -150,74 +201,48 @@ class ATM { public:
 
 ATM atm;
 
-bool boolret;
-
-bool
+void
 atmmenu()
-{
-    // code here
-    system("clear");
-    while (true)
+{ while (true) {
+
+    clear();
+    atm.hello();
+    cout << endl;
+    printf("+---------------------------------------+"); cout << endl;
+
+    if (loginstate == "logged in!")
+  { printf("+ 1. Log in to the ATM [%s]     +\n", loginstate.c_str()); cout << endl; } else {
+    printf("+ 1. Log in to the ATM [%s]  +\n", loginstate.c_str()); }
+
+    printf("+ 2. Create an ATM PIN                  +"); cout << endl;
+    printf("+ 3. Withdraw some money                +"); cout << endl;
+    printf("+ 4. Deposit some money                 +"); cout << endl;
+    printf("+ 5. Change your ATM PIN                +"); cout << endl;
+    printf("+---------------------------------------+"); cout << endl;
+    cout << "Enter your choice: "; cin >> choicebf;
+
+    if (choicebf == "1")
     {
-
-        int atmchoice;
-        ATM atm;
-        cout << endl;
-        atm.checkbalance(); cout << endl;
-        atm.hello(); cout << endl;
-        printf("what would you like to do in the ATM??"); cout << endl; cout << endl;
-        printf("1. Log into the ATM [%s]", loginstate.c_str()); cout << endl;
-        printf("2. Set a PIN Code"); cout << endl;
-        printf("3. Change your PIN Code"); cout << endl;
-        printf("4. Deposit pcMoney/pcDollars"); cout << endl;
-        printf("5. Withdraw pcMoney/pcDollars"); cout << endl;
-        printf("6. Exit to main screen"); cout << endl;
-        cout << "enter your choice here [Number ID]: ";
-        cin >> atmchoice;
-
-        if (atmchoice == 1) 
-        {
-            boolret = atm.login();
-            if (boolret != true)
-            {
-                printf("Some error occured. Please report this issue.");
-                return false;
-            }
-
-        } else if (atmchoice == 2) 
-        {
-            boolret = atm.createPcPin(true);
-            if (boolret != true)
-            {
-                printf("Some error occured. Please report this issue.");
-                return false;
-            }
-
-        } else if (atmchoice == 4)
-        {
-            atm.deposit();
-
-        } else if (atmchoice == 5)
-        {
-            atm.withdraw();
-
-        } else if (atmchoice == 6)
-        {
-            return true;
-
-        } else if (atmchoice == 3)
-        {
-            boolret = atm.changePcPin();
-            if (boolret != true)
-            {
-                printf("Some error occured. Please report this issue.");
-                return false;
-            }
-            
-        }
-        
+        atm.login();
     }
- 
-    return true;
-}
-
+    else if (choicebf == "2")
+    {
+        atm.createPin(true);
+    }
+    else if (choicebf == "3")
+    {
+        printf("how much money to withdraw?");
+        cin >> outmoneyc;
+        atm.withdraw(outmoneyc);
+    }
+    else if (choicebf == "4")
+    {
+        printf("how much money to deposit?");
+        cin >> inmoneyc;
+        atm.deposit(inmoneyc);
+    }
+    else if (choicebf == "5")
+    {
+        // code
+    }
+}}
